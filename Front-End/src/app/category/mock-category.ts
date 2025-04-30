@@ -1,4 +1,4 @@
-import { Category } from "./category";
+import { Category } from "./model/category";
 
 export const CATEGORY_DATA: Category[] = [
   new Category(1, 'Dados'),

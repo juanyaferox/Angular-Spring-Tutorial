@@ -33,18 +33,30 @@ export class CategoryListComponent implements OnInit {
     public dialog: MatDialog
   ) {}
 
+  ngOnInit(): void {
+    this.loadCategories()
+  }
+
+  loadCategories() : void {
+    this.categoryService
+      .getCategories()
+      .subscribe(categories => this.dataSource.data = categories);
+  }
+
   createCategory(): void {
     this.dialog
       .open(CategoryEditComponent, new MatDialogConfig().data)
       .afterClosed()
-      .subscribe((_) => this.ngOnInit);
+      .subscribe(
+        () => this.loadCategories()
+      );
   }
 
   editCategory(category: Category): void {
     this.dialog
       .open(CategoryEditComponent, { data: { category } })
       .afterClosed()
-      .subscribe((_) => this.ngOnInit);
+      .subscribe(() => this.loadCategories());
   }
 
   deleteCategory(category: Category): void {
@@ -56,19 +68,13 @@ export class CategoryListComponent implements OnInit {
         },
       })
       .afterClosed()
-      .subscribe((r) =>
-        r
+      .subscribe(
+        result => result
           ? this.categoryService
-              .deleteCategory(category.id!)
-              .subscribe((_) => this.ngOnInit)
+            .deleteCategory(category.id!)
+            .subscribe(() => this.loadCategories())
           : null
       );
-  }
-
-  ngOnInit(): void {
-    this.categoryService
-      .getCategories()
-      .subscribe((c) => (this.dataSource.data = c));
   }
 
   // Ejemplo haciendo uso de signals, cuya reactividad es automática y no manual

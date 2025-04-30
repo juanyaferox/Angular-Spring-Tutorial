@@ -16,3 +16,9 @@ spring:
         show-sql: true
         hibernate:
             ddl-auto: update
+    devtools:
+        restart:
+            enabled: true
+            additional-paths: src/main/java
+        livereload:
+            enables: true

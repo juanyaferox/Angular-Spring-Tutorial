@@ -1,7 +1,4 @@
 import { provideRouter, Routes } from '@angular/router';
-import { HeaderComponent } from './core/header/header.component';
-import { AppComponent } from './app.component';
-import { bootstrapApplication } from '@angular/platform-browser';
 
 export const routes: Routes = [
   {
@@ -9,6 +6,12 @@ export const routes: Routes = [
     loadComponent:
     () => import('./category/category-list/category-list.component')
     .then(c => c.CategoryListComponent)
-  }
+  },
+  {
+    path: 'authors',
+    loadComponent:
+    () => import('./author/author-list/author-list.component')
+    .then(c => c.AuthorListComponent)
+  },
 ];
 
