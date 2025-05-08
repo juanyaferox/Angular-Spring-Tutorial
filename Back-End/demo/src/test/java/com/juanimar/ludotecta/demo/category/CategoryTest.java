@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -84,5 +83,30 @@ public class CategoryTest {
         categoryService.save(EXISTS_CATEGORY_ID, categoryDto);
 
         verify(categoryRepository).save(category);
+    }
+
+    public static final Long NOT_EXISTS_CATEGORY_ID = 0L;
+
+    @Test
+    public void getExistsCategoryIdShouldReturnCategory() {
+
+        Category category = mock(Category.class);
+        when(category.getId()).thenReturn(EXISTS_CATEGORY_ID);
+        when(categoryRepository.findById(EXISTS_CATEGORY_ID)).thenReturn(Optional.of(category));
+
+        Category categoryResponse = categoryService.getCategoryById(EXISTS_CATEGORY_ID);
+
+        assertNotNull(categoryResponse);
+        assertEquals(EXISTS_CATEGORY_ID, category.getId());
+    }
+
+    @Test
+    public void getNotExistsCategoryIdShouldReturnNull() {
+
+        when(categoryRepository.findById(NOT_EXISTS_CATEGORY_ID)).thenReturn(Optional.empty());
+
+        Category category = categoryService.getCategoryById(NOT_EXISTS_CATEGORY_ID);
+
+        assertNull(category);
     }
 }

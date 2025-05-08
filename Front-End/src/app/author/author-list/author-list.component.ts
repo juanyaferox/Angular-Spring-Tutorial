@@ -26,7 +26,7 @@ import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dial
   templateUrl: './author-list.component.html',
   styleUrl: './author-list.component.scss'
 })
-export class AuthorListComponent implements OnInit, AfterViewInit {
+export class AuthorListComponent implements OnInit {
 
   constructor(
     private authorService : AuthorService,
@@ -37,33 +37,25 @@ ngOnInit(): void {
   this.loadPage()
 }
 
-ngAfterViewInit(): void {
-  this.dataSource.paginator = this.paginator;
-}
-
-
 @ViewChild(MatPaginator)
   paginator!: MatPaginator;
 
-pageable!: Pageable;
+pageable: Pageable = new Pageable(0,5);
 dataSource = new MatTableDataSource<Author>();
 displayedColumns: string[] = ['id', 'name', 'nationality', 'action'];
-pageNumber!: number;
-pageSize!: number;
-totalElements!: number;
+totalElements: number = 0;
 
 loadPage(event?: PageEvent) {
   if (event != null) {
     this.pageable.pageSize = event.pageSize;
     this.pageable.pageNumber = event.pageIndex;
   }
-  this.authorService.getAuthors().subscribe(
+  this.authorService.getAuthors(this.pageable).subscribe(
     authorPage => {
       this.dataSource.data = authorPage.content;
-      this.pageable = authorPage.pageable;
+      this.pageable.pageNumber = authorPage.pageable.pageNumber;
+      this.pageable.pageSize = authorPage.pageable.pageSize;
       this.totalElements = authorPage.totalElements;
-      this.pageNumber = this.pageable.pageNumber;
-      this.pageSize = this.pageable.pageSize;
     }
   )
 }
@@ -71,7 +63,7 @@ loadPage(event?: PageEvent) {
 editAuthor(author: Author) {
   this.dialog
   .open(AuthorEditComponent, {data : {author} })
-  .afterClosed().subscribe(() => this.ngOnInit)
+  .afterClosed().subscribe(() => this.loadPage())
 }
 deleteAuthor(author : Author) {
 this.dialog
@@ -86,13 +78,13 @@ this.dialog
         r
           ? this.authorService
               .deleteAuthor(author.id!)
-              .subscribe(() => this.ngOnInit)
+              .subscribe(() => this.loadPage())
           : null
       );
 }
 createAuthor() {
   this.dialog
     .open(AuthorEditComponent, new MatDialogConfig())
-    .afterClosed().subscribe(() => this.ngOnInit)
+    .afterClosed().subscribe(() => this.loadPage())
   }
 }

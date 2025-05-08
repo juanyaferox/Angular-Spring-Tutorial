@@ -13,7 +13,7 @@ export const AUTHOR_DATA: AuthorPage = {
     pageable: {
         pageSize: 5,
         pageNumber: 0,
-        sortPage: [{ property: 'id', direction: 'ASC' }],
+        sort: [{ property: 'id', direction: 'ASC' }],
     },
     totalElements: 7,
 };

@@ -5,6 +5,7 @@ import com.juanimar.ludotecta.demo.category.model.CategoryDTO;
 import com.juanimar.ludotecta.demo.category.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,18 +32,20 @@ public class CategoryServiceImpl implements CategoryService {
                 ).collect(Collectors.toList());
     }
 
+    @Override
+    public Category getCategoryById(long id) {
+        return categoryRepository.findById(id).orElse(null);
+    }
+
     /**
      * @param idCategory
      * @param categoryDTO
      */
     @Override
     public void save(Long idCategory, CategoryDTO categoryDTO) {
-        Category category = modelMapper.map(categoryDTO, Category.class);
 
-        if (idCategory != null)
-            categoryRepository.findById(idCategory).ifPresent(c -> {
-                category.setId(c.getId());
-            });
+        Category category = idCategory != null ? getCategoryById(idCategory) : new Category();
+        BeanUtils.copyProperties(categoryDTO, category, "id");
 
         categoryRepository.save(category);
     }
@@ -52,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public void remove(long idCategory) throws Exception {
-        Category category = categoryRepository.findById(idCategory).orElse(null);
+        Category category = getCategoryById(idCategory);
         if (category == null)
             throw new Exception("Category not exists");
         categoryRepository.delete(category);

@@ -1,0 +1,71 @@
+.container {
+    margin: 20px;
+
+    mat-card {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      flex-direction: row;
+      box-sizing: border-box;
+    }
+
+    .photo {
+      flex: 0 1 40%;
+      max-width: 80px;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      img {
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+      }
+    }
+
+    .detail {
+      flex: 1;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      .title {
+        font-weight: bold;
+      }
+
+    }
+
+    .filters {
+        display: flex;
+
+        mat-form-field {
+            width: 300px;
+            margin-right: 20px;
+        }
+
+        .buttons {
+            flex: auto;
+            align-self: center;
+
+            button {
+                margin-left: 15px;
+            }
+        }
+    }
+
+    .game-list {
+        margin-top: 20px;
+        margin-bottom: 20px;
+
+        display: flex;
+        flex-flow: wrap;
+        overflow: auto;
+    }
+
+    .buttons {
+        text-align: right;
+    }
+}
+
+button {
+    width: 125px;
+}

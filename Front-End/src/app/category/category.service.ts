@@ -20,7 +20,9 @@ export class CategoryService {
   }
 
   saveCategory(category: Category): Observable<Category[]> {
-    return this.http.put<Category[]>(this.baseUrl,category)
+    const {id} = category
+    const url = id ? `${this.baseUrl}/${id}` : this.baseUrl
+    return this.http.put<Category[]>(url,category)
   }
 
   deleteCategory(id : number): Observable<Category[]> {

@@ -3,15 +3,15 @@ import { SortPage } from "./sort-page";
 export class Pageable {
     pageNumber: number;
     pageSize: number;
-    sortPage?: SortPage[];
+    sort?: SortPage[];
 
     constructor(
         pageNumber: number,
         pageSize: number,
-        sortPage?: SortPage[],
+        sort?: SortPage[],
     ) {
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
-        this.sortPage = sortPage;
+        this.sort = sort ?? [new SortPage('name', 'ASC')];
     }
 }

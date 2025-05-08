@@ -19,12 +19,12 @@ export class AuthorEditComponent implements OnInit {
 
   constructor(
       public dialogRef: MatDialogRef<AuthorEditComponent>,
-      @Inject(MAT_DIALOG_DATA) public data: any,
+      @Inject(MAT_DIALOG_DATA) public data: {author : Author},
       private authorService: AuthorService
   ) {}
 
   ngOnInit(): void {
-      this.author = this.data != null ? this.data.category : new Author()
+      this.author = this.data != null ? this.data.author : new Author()
     }
   onSave() {
       this.authorService.saveAuthor(this.author)
