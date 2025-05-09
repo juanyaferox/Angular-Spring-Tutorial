@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { Client } from './model/client.model';
 
 @Injectable({
@@ -18,7 +18,15 @@ export class ClientService {
 
   saveClient(client : Client) : Observable<void>{
     const url = client.id ? `${this.baseUrl}/${client.id}` : this.baseUrl
-    return this.http.put<void>(url, client)
+    return this.http.put<void>(url, client).pipe(
+      catchError(error => {
+        if (error.status === 409) {
+          console.error('Error del servidor (500):', error);
+          alert('El nombre no puede ser igual.');
+        }
+        return throwError(() => error);
+      })
+    );
   }
 
   deleteClient(client : Client) : Observable<void> {

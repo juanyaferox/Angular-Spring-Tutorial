@@ -5,6 +5,7 @@ import com.juanimar.ludotecta.demo.client.service.ClientService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class ClientController {
     }
 
     @PutMapping({"", "/{id}"})
-    public void setClient(@PathVariable(required = false) Long id, @RequestBody ClientDTO clientDTO) {
+    public void setClient(@PathVariable(required = false) Long id, @RequestBody ClientDTO clientDTO) throws ResponseStatusException {
         clientService.save(id, clientDTO);
     }
 

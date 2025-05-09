@@ -5,7 +5,9 @@ import com.juanimar.ludotecta.demo.client.model.ClientDTO;
 import com.juanimar.ludotecta.demo.client.repository.ClientRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -20,10 +22,10 @@ public class ClientServiceImpl implements ClientService {
      * @param clientDTO
      */
     @Override
-    public void save(Long idClient, ClientDTO clientDTO) {
+    public void save(Long idClient, ClientDTO clientDTO) throws ResponseStatusException {
         Client client = idClient != null ? clientRepository.findById(idClient).orElse(null) : new Client();
-        if (client == null)
-            return;
+        if (client == null || clientRepository.existsByNameIgnoreCase(clientDTO.getName()))
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
         BeanUtils.copyProperties(clientDTO, client);
         clientRepository.save(client);
     }
