@@ -17,7 +17,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 export class ClientListComponent implements OnInit{
 
 dataSource = new MatTableDataSource<Client>();
-displayedColumns : string[] = ['id','name'];
+displayedColumns : string[] = ['id','name', 'action'];
 
   constructor(private clientService : ClientService,
     public dialog  : MatDialog) {
@@ -37,7 +37,10 @@ displayedColumns : string[] = ['id','name'];
     .afterClosed().subscribe(() => this.getData())
   }
 
-  deleteClient(_t20: any) {
+  deleteClient(client: Client) {
+    this.clientService.deleteClient(client).subscribe(
+      () => this.getData()
+    )
 
   }
   createClient() {

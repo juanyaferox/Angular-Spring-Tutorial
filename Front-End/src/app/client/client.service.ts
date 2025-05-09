@@ -15,4 +15,13 @@ export class ClientService {
   getClients() : Observable<Client[]>{
     return this.http.get<Client[]>(this.baseUrl)
   }
+
+  saveClient(client : Client) : Observable<void>{
+    const url = client.id ? `${this.baseUrl}/${client.id}` : this.baseUrl
+    return this.http.put<void>(url, client)
+  }
+
+  deleteClient(client : Client) : Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${client.id}`)
+  }
 }
