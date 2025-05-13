@@ -3,7 +3,6 @@ package com.juanimar.ludotecta.demo.common.pagination;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,7 +14,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString
 public class PageableRequest implements Serializable {
 
     @Serial
@@ -59,7 +57,6 @@ public class PageableRequest implements Serializable {
         );
     }
 
-    @ToString
     @Getter
     @Setter
     public static class SortRequest implements Serializable {

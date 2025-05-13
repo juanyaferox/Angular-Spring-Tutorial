@@ -21,8 +21,8 @@ export class ClientService {
     return this.http.put<void>(url, client).pipe(
       catchError(error => {
         if (error.status === 409) {
-          console.error('Error del servidor (500):', error);
-          alert('El nombre no puede ser igual.');
+          console.error('Error del servidor:', error);
+          alert('El nombre no puede ser igual a uno ya existente.');
         }
         return throwError(() => error);
       })

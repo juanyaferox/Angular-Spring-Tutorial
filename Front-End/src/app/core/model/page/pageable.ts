@@ -12,6 +12,6 @@ export class Pageable {
     ) {
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
-        this.sort = sort ?? [new SortPage('name', 'ASC')];
+        this.sort = sort ?? [new SortPage('id', 'ASC')];
     }
 }

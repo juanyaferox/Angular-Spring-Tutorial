@@ -5,12 +5,10 @@ import com.juanimar.ludotecta.demo.category.model.Category;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 @Entity
-@ToString
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

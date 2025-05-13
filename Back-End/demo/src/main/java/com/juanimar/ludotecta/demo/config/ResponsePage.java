@@ -8,14 +8,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ResponsePage<T> extends PageImpl<T> {
 
-    @Serial
     private static final long serialVersionUID = 1L;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
