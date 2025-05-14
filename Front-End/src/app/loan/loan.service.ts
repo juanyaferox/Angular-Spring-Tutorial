@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Loan } from './model/loan.model';
 import { LoanPage } from './model/loan-page';
+import { DatePipe } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -14,14 +15,25 @@ export class LoanService {
 
   private URL = 'http://localhost:8080/loan'
 
-  getLoans(pageable : Pageable, idGame? : number, idClient? : number, date?:Date) : Observable<LoanPage> {
-    console.log(pageable);
+  getLoansFiltered(pageable : Pageable, idGame? : number, idClient? : number, date?:string) : Observable<LoanPage> {
     const url : string = this.composeFindUrl(idGame, idClient, date);
-    console.log(url)
     return this.http.post<LoanPage>(url, {pageable})
   }
 
-  private composeFindUrl(idGame?: number, idClient?: number, date?:Date): string {
+  getLoans(pageable : Pageable) : Observable<LoanPage> {
+    return this.http.post<LoanPage>(this.URL, {pageable})
+  }
+
+  deleteLoan(id:number) : Observable<void> {
+    return this.http.delete<void>(`${this.URL}/${id}`)
+  }
+
+  saveLoan(loan : Loan, dateStart? : Date, dateEnd?: Date) : Observable<void> {
+    const url = loan.id != null ? `${this.URL}/${loan.id}` : this.URL
+    return this.http.put<void>(url,loan)
+  }
+
+  private composeFindUrl(idGame?: number, idClient?: number, date?:string): string {
     const params = new URLSearchParams();
 
     if (idGame) {
@@ -31,10 +43,11 @@ export class LoanService {
         params.set('idClient', idClient.toString());
     }
     if (date) {
-        params.set('date', date.toString());
+        params.set('date', date);
     }
 
     const queryString = params.toString();
     return queryString ? `${this.URL}?${queryString}` : this.URL;
   }
+
 }

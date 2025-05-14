@@ -65,6 +65,7 @@ editAuthor(author: Author) {
   .open(AuthorEditComponent, {data : {author} })
   .afterClosed().subscribe(() => this.loadPage())
 }
+
 deleteAuthor(author : Author) {
 this.dialog
       .open(DialogConfirmationComponent, {

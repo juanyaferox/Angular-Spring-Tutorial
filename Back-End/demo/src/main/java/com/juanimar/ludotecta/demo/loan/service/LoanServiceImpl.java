@@ -1,6 +1,8 @@
 package com.juanimar.ludotecta.demo.loan.service;
 
+import com.juanimar.ludotecta.demo.client.service.ClientService;
 import com.juanimar.ludotecta.demo.common.criteria.SearchCriteria;
+import com.juanimar.ludotecta.demo.game.service.GameService;
 import com.juanimar.ludotecta.demo.loan.LoanSpecification;
 import com.juanimar.ludotecta.demo.loan.model.Loan;
 import com.juanimar.ludotecta.demo.loan.model.LoanDTO;
@@ -22,14 +24,26 @@ public class LoanServiceImpl implements LoanService {
     @Autowired
     LoanRepository loanRepository;
 
+    @Autowired
+    GameService gameService;
+
+    @Autowired
+    ClientService clientService;
+
     @Override
     public void save(Long id, LoanDTO loanDTO) {
-        Loan loan = id != null ? loanRepository.findById(id).orElse(new Loan()) : new Loan();
+        Loan loan = id != null ? loanRepository.findById(id).orElse(null) : new Loan();
 
-        if (loan.getDateStart().plusDays(14).isBefore(loan.getDateEnd()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        if (loanDTO.getDateEnd().isBefore(loanDTO.getDateStart()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de fin no puede ser menor a la de inicio.");
 
-        BeanUtils.copyProperties(loanDTO, loan, "id");
+        if (loanDTO.getDateStart().plusDays(14).isBefore(loanDTO.getDateEnd()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El período no puede superar los 14 días.");
+
+        BeanUtils.copyProperties(loanDTO, loan, "id", "category", "game");
+        loan.setClient(clientService.getClientById(loanDTO.getClient().getId()));
+        loan.setGame(gameService.getGameById(loanDTO.getGame().getId()));
+
         loanRepository.save(loan);
     }
 

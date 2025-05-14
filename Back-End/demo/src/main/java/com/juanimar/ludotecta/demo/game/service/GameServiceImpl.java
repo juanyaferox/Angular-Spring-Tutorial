@@ -41,8 +41,13 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    public Game getGameById(long id) {
+        return gameRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public void saveGame(Long id, GameDTO gameDTO) {
-        Game game = id == null ? new Game() : gameRepository.findById(id).orElse(new Game());
+        Game game = id == null ? new Game() : getGameById(id);
         BeanUtils.copyProperties(gameDTO, game, "id", "category", "author");
         game.setCategory(categoryService.getCategoryById(gameDTO.getCategory().getId()));
         game.setAuthor(authorService.getAuthorById(gameDTO.getAuthor().getId()));

@@ -8,5 +8,7 @@ import java.util.List;
 public interface GameService {
     List<Game> getGames(String title, Long idCategory);
 
+    Game getGameById(long id);
+
     void saveGame(Long id, GameDTO gameDTO);
 }

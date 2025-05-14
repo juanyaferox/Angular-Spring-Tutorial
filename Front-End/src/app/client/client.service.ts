@@ -23,6 +23,9 @@ export class ClientService {
         if (error.status === 409) {
           console.error('Error del servidor:', error);
           alert('El nombre no puede ser igual a uno ya existente.');
+        } else if (error.status === 400) {
+          console.error('Error del servidor:', error);
+          alert('El nombre es obligatorio.');
         }
         return throwError(() => error);
       })

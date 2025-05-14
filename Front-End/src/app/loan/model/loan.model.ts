@@ -3,15 +3,15 @@ import { Game } from '../../game/model/game.model';
 
 export class Loan {
   id?: number;
-  dateStart?: Date;
-  dateEnd?: Date;
+  dateStart?: string;
+  dateEnd?: string;
   client?: Client;
   game?: Game;
 
   constructor(
     id?: number,
-    dateStart?: Date,
-    dateEnd?: Date,
+    dateStart?: string,
+    dateEnd?: string,
     client?: Client,
     game?: Game
   ) {

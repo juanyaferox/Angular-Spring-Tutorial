@@ -3,6 +3,7 @@ package com.juanimar.ludotecta.demo.loan.controller;
 import com.juanimar.ludotecta.demo.loan.model.LoanDTO;
 import com.juanimar.ludotecta.demo.loan.model.LoanSearchDTO;
 import com.juanimar.ludotecta.demo.loan.service.LoanService;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,8 @@ public class LoanController {
     }
 
     @PutMapping({"", "/{id}"})
-    void setLoan(@PathVariable(required = false) Long id, @RequestBody LoanDTO loanDTO) {
+    void setLoan(@PathVariable(required = false) Long id, @RequestBody @Valid LoanDTO loanDTO) {
+        System.out.println(loanDTO.toString());
         loanService.save(id, loanDTO);
     }
 

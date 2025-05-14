@@ -1,1 +1,70 @@
-<p>loan-edit works!</p>
+<div class="container">
+  @if (loan.id) {
+  <h1>Modificar préstamo</h1>
+  } @else {
+  <h1>Crear préstamo</h1>
+  }
+
+  <form>
+    <mat-form-field>
+      <mat-label>Identificador</mat-label>
+      <input
+        type="text"
+        matInput
+        placeholder="Identificador"
+        [(ngModel)]="loan.id"
+        name="id"
+        disabled
+      />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Título</mat-label>
+      <mat-select disableRipple [(ngModel)]="loan.game" name="game">
+        @for (game of games; track game.id) {
+        <mat-option [value]="game">{{ game.title }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Cliente</mat-label>
+      <mat-select disableRipple [(ngModel)]="loan.client" name="client">
+        @for (client of clients; track client.id) {
+        <mat-option [value]="client">{{ client.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Rango de fechas</mat-label>
+      <mat-date-range-input [rangePicker]="rangePicker">
+        <input
+          matInput
+          matStartDate
+          [(ngModel)]="dateStart"
+          placeholder="Fecha de inicio"
+          name="dateStart"
+        />
+        <input
+          matInput
+          matEndDate
+          [(ngModel)]="dateEnd"
+          placeholder="Fecha de fin"
+          name="dateEnd"
+        />
+      </mat-date-range-input>
+      <mat-hint>DD/MM/YYYY</mat-hint>
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="rangePicker"
+      ></mat-datepicker-toggle>
+      <mat-date-range-picker #rangePicker></mat-date-range-picker>
+    </mat-form-field>
+  </form>
+
+  <div class="buttons">
+    <button mat-stroked-button (click)="onClose()">Cerrar</button>
+    <button mat-flat-button color="primary" (click)="onSave(loan)">Guardar</button>
+  </div>
+</div>

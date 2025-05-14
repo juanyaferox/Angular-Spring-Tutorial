@@ -9,6 +9,8 @@ import java.util.List;
 public interface ClientService {
     void save(Long idClient, ClientDTO clientDTO) throws ResponseStatusException;
 
+    Client getClientById(long id);
+
     List<Client> getClientList();
 
     void delete(long id);

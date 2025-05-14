@@ -17,30 +17,31 @@ public class ClientServiceImpl implements ClientService {
     @Autowired
     ClientRepository clientRepository;
 
-    /**
-     * @param idClient
-     * @param clientDTO
-     */
     @Override
     public void save(Long idClient, ClientDTO clientDTO) throws ResponseStatusException {
-        Client client = idClient != null ? clientRepository.findById(idClient).orElse(null) : new Client();
-        if (client == null || clientRepository.existsByNameIgnoreCase(clientDTO.getName()))
+        Client client = idClient != null ? getClientById(idClient) : new Client();
+
+        if (clientDTO.getName() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        if (clientRepository.existsByNameIgnoreCase(clientDTO.getName()))
             throw new ResponseStatusException(HttpStatus.CONFLICT);
+
         BeanUtils.copyProperties(clientDTO, client);
         clientRepository.save(client);
     }
 
-    /**
-     * @return
-     */
+    @Override
+    public Client getClientById(long id) {
+        return clientRepository.findById(id).orElse(null);
+    }
+
     @Override
     public List<Client> getClientList() {
         return clientRepository.findAll();
     }
 
-    /**
-     * @param id
-     */
     @Override
     public void delete(long id) {
         clientRepository.deleteById(id);
