@@ -1,8 +1,11 @@
 package com.juanimar.ludotecta.demo.client.model;
 
+import com.juanimar.ludotecta.demo.loan.model.Loan;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,4 +19,7 @@ public class Client {
     private Long id;
 
     String name;
+
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "client")
+    List<Loan> loans;
 }

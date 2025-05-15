@@ -7,6 +7,7 @@ import com.juanimar.ludotecta.demo.loan.LoanSpecification;
 import com.juanimar.ludotecta.demo.loan.model.Loan;
 import com.juanimar.ludotecta.demo.loan.model.LoanDTO;
 import com.juanimar.ludotecta.demo.loan.repository.LoanRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 
 @Service
+@Transactional
 public class LoanServiceImpl implements LoanService {
 
     @Autowired
@@ -39,6 +41,12 @@ public class LoanServiceImpl implements LoanService {
 
         if (loanDTO.getDateStart().plusDays(14).isBefore(loanDTO.getDateEnd()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El período no puede superar los 14 días.");
+
+        // TODO: Insertar verificación que el juego no esté ya prestado durantes esas fechas
+        // findAll -> coincidencias de fechaStart >= y fechaEnd <= y observar si anyMatch del juego
+
+        // TODO: Insertar verificación de que el cliente ya no tenga un juego prestado durante esos dias (max 1)
+        //getClientById(loandto.client.id) -> client.getLoans ->  if coincidencias de fechaStart >= y fechaEnd > 0
 
         BeanUtils.copyProperties(loanDTO, loan, "id", "category", "game");
         loan.setClient(clientService.getClientById(loanDTO.getClient().getId()));

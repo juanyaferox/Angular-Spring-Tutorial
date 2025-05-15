@@ -7,7 +7,9 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,6 +45,14 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public void save(Long idCategory, CategoryDTO categoryDTO) {
+
+        // Si es un nueva categoria busca coincidencias en los nombres, caso exista throwea error
+        if (idCategory == null) {
+            if (categoryRepository.findAll().stream().anyMatch(category ->
+                    category.getName().equals(categoryDTO.getName())
+            ))
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Nombre ya existente");
+        }
 
         Category category = idCategory != null ? getCategoryById(idCategory) : new Category();
         BeanUtils.copyProperties(categoryDTO, category, "id");

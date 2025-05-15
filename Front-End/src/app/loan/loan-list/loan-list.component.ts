@@ -103,8 +103,9 @@ export class LoanListComponent implements OnInit {
     this.dialog.open(DialogConfirmationComponent, {data : {
       title: 'Confirmación de borrado',
       description: 'Se va a borrar',}
-    }).afterClosed().subscribe( r =>
-      this.loanService.deleteLoan(loan?.id!).subscribe(v => this.loadPage())
+    }).afterClosed().subscribe( r => r
+      ? this.loanService.deleteLoan(loan?.id!).subscribe(v => this.loadPage())
+      : null
     )
   }
 

@@ -1,8 +1,11 @@
 package com.juanimar.ludotecta.demo.category.model;
 
+import com.juanimar.ludotecta.demo.game.model.Game;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,4 +19,7 @@ public class Category {
 
     @Column(name = "name", nullable = false)
     String name;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
+    List<Game> games;
 }

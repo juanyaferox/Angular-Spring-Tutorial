@@ -3,6 +3,7 @@ package com.juanimar.ludotecta.demo.client.service;
 import com.juanimar.ludotecta.demo.client.model.Client;
 import com.juanimar.ludotecta.demo.client.model.ClientDTO;
 import com.juanimar.ludotecta.demo.client.repository.ClientRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
+@Transactional
 public class ClientServiceImpl implements ClientService {
 
     @Autowired
@@ -44,6 +46,18 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void delete(long id) {
-        clientRepository.deleteById(id);
+        if (clientRepository.existsById(id)) {
+            // Posibilidad: En lugar de borrar, convertir en anónimo.
+            // Permite borrarlos sin dejar perder la información relacionada
+            // Sería necesario introducir un LocalDate del estilo 'deleteDate'
+            // Después solo mostrar en los listados los q tienen ese dato null
+            /*
+            Client client = clientRepository.findById(id).orElse(null);
+            client.setName("client_" + client.getId());
+            client.setIsDeleted(true);
+            clientRepository.save(client);*/
+            clientRepository.deleteById(id);
+        }
+
     }
 }

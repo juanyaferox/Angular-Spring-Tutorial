@@ -35,7 +35,6 @@ public class LoanController {
 
     @PutMapping({"", "/{id}"})
     void setLoan(@PathVariable(required = false) Long id, @RequestBody @Valid LoanDTO loanDTO) {
-        System.out.println(loanDTO.toString());
         loanService.save(id, loanDTO);
     }
 

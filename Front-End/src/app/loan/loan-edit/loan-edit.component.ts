@@ -64,43 +64,25 @@ export class LoanEditComponent implements OnInit {
     this.dialogRef.close();
   }
   onSave(loan: Loan) {
-    if (!this.isValid(loan))
-      return;
-    console.log(loan)
+    this.pipeDate(loan);
     this.loanService
       .saveLoan(loan, this.dateStart, this.dateEnd)
       .subscribe((v) => this.dialogRef.close());
   }
 
-  private isValid(loan: Loan): boolean {
-    if (!loan.game || !loan.client || !this.dateStart || !this.dateEnd) {
-      alert('Por favor, completa todos los campos obligatorios.');
-      return false;
-    }
-
-    if (this.dateStart > this.dateEnd) {
-      alert('La fecha de fin de no debe ser mayor a la inicial.');
-      return false;
-    }
-
-    if (this.is1MoreThan4DaysApart(this.dateStart!, this.dateEnd!)) {
-      alert('El período no puede superar los 14 días.');
-      return false;
-    }
-
-    // Al pasar las validaciones en el front se convierte la fecha a un string
+  private pipeDate(loan: Loan) {
+    // Sse convierte la fecha a un string
     loan.dateStart =
       this.datePipe.transform(this.dateStart, 'dd/MM/yyyy') ?? undefined;
     loan.dateEnd =
       this.datePipe.transform(this.dateEnd, 'dd/MM/yyyy') ?? undefined;
-    return true;
   }
 
-  private is1MoreThan4DaysApart(date1: Date, date2: Date): boolean {
-    console.log(date1, date2)
-    const diff = Math.abs(date1.getTime() - date2.getTime());
-    console.log(diff)
-    console.log(1000 * 60 * 60 * 24)
-    return diff / (1000 * 60 * 60 * 24) >= 14;
+  public isLessThan4DaysApart(): boolean {
+    if (this.dateStart == null || this.dateEnd == null) {
+      return true;
+    }
+    const diff = Math.abs(this.dateStart.getTime() - this.dateEnd.getTime());
+    return diff / (1000 * 60 * 60 * 24) < 14;
   }
 }
