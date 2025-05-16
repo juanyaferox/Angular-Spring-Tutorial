@@ -1,5 +1,5 @@
 import { ClientService } from './../../client/client.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { MatIconModule } from '@angular/material/icon'
 import { CommonModule, DatePipe } from '@angular/common';
@@ -20,6 +20,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Loan } from '../model/loan.model';
 import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation.component';
 import { LoanEditComponent } from '../loan-edit/loan-edit.component';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-loan-list',
@@ -41,7 +42,7 @@ import { LoanEditComponent } from '../loan-edit/loan-edit.component';
   templateUrl: './loan-list.component.html',
   styleUrl: './loan-list.component.scss'
 })
-export class LoanListComponent implements OnInit {
+export class LoanListComponent implements OnInit, OnDestroy {
   filterGame?: Game;
   filterClient?: Client;
   filterDate? : Date;
@@ -53,6 +54,7 @@ export class LoanListComponent implements OnInit {
   pageable: Pageable = new Pageable(0,5);
   totalElements = 0;
   displayedColumns = ['id','nameGame','nameClient','dateStart','dateEnd','action'];
+  private destroying$ = new Subject<void>
 
   constructor(
     private gameService : GameService,
@@ -65,6 +67,11 @@ export class LoanListComponent implements OnInit {
   ngOnInit(): void {
     this.loadFilters()
     this.loadPage()
+  }
+
+  ngOnDestroy(): void {
+    this.destroying$.next();
+    this.destroying$.complete();
   }
 
   onCleanFilter() {
@@ -80,6 +87,7 @@ export class LoanListComponent implements OnInit {
       this.filterGame?.id,
       this.filterClient?.id,
       this.filterDate ? this.datePipe.transform(this.filterDate, 'yyyy-MM-dd')! : undefined)
+      .pipe(takeUntil(this.destroying$))
       .subscribe(loanPage => {
       this.dataSource.data = loanPage.content;
       this.pageable.pageNumber = loanPage.pageable.pageNumber;
@@ -91,10 +99,10 @@ export class LoanListComponent implements OnInit {
   }
 
   loadFilters() : void {
-    this.clientService.getClients().subscribe( clients =>
+    this.clientService.getClients().pipe(takeUntil(this.destroying$)).subscribe( clients =>
       this.clients = clients
     )
-    this.gameService.getGames().subscribe( games =>
+    this.gameService.getGames().pipe(takeUntil(this.destroying$)).subscribe( games =>
       this.games = games
     )
   }
@@ -104,7 +112,7 @@ export class LoanListComponent implements OnInit {
       title: 'Confirmación de borrado',
       description: 'Se va a borrar',}
     }).afterClosed().subscribe( r => r
-      ? this.loanService.deleteLoan(loan?.id!).subscribe(v => this.loadPage())
+      ? this.loanService.deleteLoan(loan?.id!).pipe(takeUntil(this.destroying$)).subscribe(v => this.loadPage())
       : null
     )
   }
@@ -113,7 +121,7 @@ export class LoanListComponent implements OnInit {
     this.dialog.open(LoanEditComponent, {data : {
       games : this.games, clients: this.clients, loan: new Loan()
     }})
-      .afterClosed().subscribe(v => this.loadPage())
+      .afterClosed().pipe(takeUntil(this.destroying$)).subscribe(v => this.loadPage())
   }
 
   loadPage($event?: PageEvent) {
@@ -122,12 +130,12 @@ export class LoanListComponent implements OnInit {
       this.pageable.pageNumber = $event.pageIndex;
     }
     this.loanService.getLoans(this.pageable)
+    .pipe(takeUntil(this.destroying$))
       .subscribe(loanPage => {
       this.dataSource.data = loanPage.content;
       this.pageable.pageNumber = loanPage.pageable.pageNumber;
       this.pageable.pageSize = loanPage.pageable.pageSize;
       this.totalElements = loanPage.totalElements;
-      console.table(loanPage)
       }
     )
   }

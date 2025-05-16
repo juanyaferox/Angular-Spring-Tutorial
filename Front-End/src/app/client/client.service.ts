@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Client } from './model/client.model';
+import { Handler } from '../core/utils/handler.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClientService {
 
-  constructor(private http : HttpClient) { }
+  constructor(private http : HttpClient, private handler : Handler) { }
 
   baseUrl = 'http://localhost:8080/client'
 
@@ -19,16 +20,7 @@ export class ClientService {
   saveClient(client : Client) : Observable<void>{
     const url = client.id ? `${this.baseUrl}/${client.id}` : this.baseUrl
     return this.http.put<void>(url, client).pipe(
-      catchError(error => {
-        if (error.status === 409) {
-          console.error('Error del servidor:', error);
-          alert('El nombre no puede ser igual a uno ya existente.');
-        } else if (error.status === 400) {
-          console.error('Error del servidor:', error);
-          alert('El nombre es obligatorio.');
-        }
-        return throwError(() => error);
-      })
+      catchError((error) => this.handler.handleError(error))
     );
   }
 

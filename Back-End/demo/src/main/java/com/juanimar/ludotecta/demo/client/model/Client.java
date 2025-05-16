@@ -18,6 +18,7 @@ public class Client {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(unique = true)
     String name;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "client")

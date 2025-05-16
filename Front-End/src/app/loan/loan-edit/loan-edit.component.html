@@ -5,7 +5,7 @@
   <h1>Crear préstamo</h1>
   }
 
-  <form #loanForm="ngForm">
+  <form #loanForm="ngForm" (focusin)="clearError()" (input)="clearError()">
     <mat-form-field>
       <mat-label>Identificador</mat-label>
       <input
@@ -72,6 +72,9 @@
     </mat-form-field>
     <mat-error *ngIf="!isLessThan4DaysApart()">
       El rango debe ser de menos de 14 días
+    </mat-error>
+    <mat-error *ngIf="error">
+      {{error}}
     </mat-error>
   </form>
 

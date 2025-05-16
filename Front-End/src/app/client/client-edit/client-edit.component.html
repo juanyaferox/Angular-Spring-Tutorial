@@ -5,7 +5,7 @@
   <h1>Crear autor</h1>
   }
 
-  <form #loanForm="ngForm">
+  <form #loanForm="ngForm" (focusin)="clearError()" (input)="clearError()">
     <mat-form-field>
       <mat-label>Identificador</mat-label>
       <input
@@ -30,6 +30,9 @@
       />
       <mat-error>El nombre no puede estar vacío</mat-error>
     </mat-form-field>
+    <mat-error *ngIf="error">
+      {{error}}
+    </mat-error>
   </form>
 
   <div class="buttons">

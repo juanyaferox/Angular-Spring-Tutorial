@@ -13,4 +13,6 @@ public interface LoanService {
     void delete(long id);
 
     Page<Loan> getPage(Pageable pageable, Long idGame, Long idClient, LocalDate date);
+
+    Loan getLoanById(Long id);
 }

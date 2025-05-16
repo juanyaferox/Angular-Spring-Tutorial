@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -23,13 +25,10 @@ public class ClientServiceImpl implements ClientService {
     public void save(Long idClient, ClientDTO clientDTO) throws ResponseStatusException {
         Client client = idClient != null ? getClientById(idClient) : new Client();
 
-        if (clientDTO.getName() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
         if (clientRepository.existsByNameIgnoreCase(clientDTO.getName()))
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe el nombre en la base de datos.");
 
+        clientDTO.setName(normalizeName(clientDTO.getName()));
         BeanUtils.copyProperties(clientDTO, client);
         clientRepository.save(client);
     }
@@ -47,17 +46,15 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public void delete(long id) {
         if (clientRepository.existsById(id)) {
-            // Posibilidad: En lugar de borrar, convertir en anónimo.
-            // Permite borrarlos sin dejar perder la información relacionada
-            // Sería necesario introducir un LocalDate del estilo 'deleteDate'
-            // Después solo mostrar en los listados los q tienen ese dato null
-            /*
-            Client client = clientRepository.findById(id).orElse(null);
-            client.setName("client_" + client.getId());
-            client.setIsDeleted(true);
-            clientRepository.save(client);*/
             clientRepository.deleteById(id);
         }
 
     }
+
+    public static String normalizeName(String name) {
+        return Arrays.stream(name.toLowerCase().trim().split("\\s+"))
+                .map(w -> Character.toUpperCase(w.charAt(0)) + w.substring(1))
+                .collect(Collectors.joining(" "));
+    }
+
 }

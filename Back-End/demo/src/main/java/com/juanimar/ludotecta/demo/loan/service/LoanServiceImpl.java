@@ -17,7 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @Transactional
@@ -34,23 +36,32 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public void save(Long id, LoanDTO loanDTO) {
-        Loan loan = id != null ? loanRepository.findById(id).orElse(null) : new Loan();
 
-        if (loanDTO.getDateEnd().isBefore(loanDTO.getDateStart()))
+        // Asignación variables
+        Loan loan = id != null ? getLoanById(id) : new Loan();
+        LocalDate dateStart = loanDTO.getDateStart();
+        LocalDate dateEnd = loanDTO.getDateEnd();
+        Long idGame = loanDTO.getGame().getId();
+        Long idClient = loanDTO.getClient().getId();
+        final int DIFF_DAYS = 14;
+
+        // Validaciones
+        if (dateEnd.isBefore(dateStart))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de fin no puede ser menor a la de inicio.");
 
-        if (loanDTO.getDateStart().plusDays(14).isBefore(loanDTO.getDateEnd()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El período no puede superar los 14 días.");
+        if (dateStart.plusDays(DIFF_DAYS).isBefore(dateEnd))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MessageFormat.format("El período no puede superar los {0} días.", DIFF_DAYS));
 
-        // TODO: Insertar verificación que el juego no esté ya prestado durantes esas fechas
-        // findAll -> coincidencias de fechaStart >= y fechaEnd <= y observar si anyMatch del juego
+        if (getAllLoansBetweenDates(dateStart, dateEnd).stream().anyMatch(l -> l.getGame().getId().equals(idGame)))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El juego ya está en préstamo.");
 
-        // TODO: Insertar verificación de que el cliente ya no tenga un juego prestado durante esos dias (max 1)
-        //getClientById(loandto.client.id) -> client.getLoans ->  if coincidencias de fechaStart >= y fechaEnd > 0
+        if (!getAllLoansBetweenDatesFromClient(dateStart, dateEnd, idClient).isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ya tiene un juego en préstamo durante esas fechas.");
 
+        // Mapeo de la entidad
         BeanUtils.copyProperties(loanDTO, loan, "id", "category", "game");
-        loan.setClient(clientService.getClientById(loanDTO.getClient().getId()));
-        loan.setGame(gameService.getGameById(loanDTO.getGame().getId()));
+        loan.setGame(gameService.getGameById(idGame));
+        loan.setClient(clientService.getClientById(idClient));
 
         loanRepository.save(loan);
     }
@@ -74,5 +85,28 @@ public class LoanServiceImpl implements LoanService {
                         new SearchCriteria("dateStart", "~", date))
                 );
         return loanRepository.findAll(spec, pageable);
+    }
+
+    private List<Loan> getAllLoansBetweenDatesFromClient(LocalDate dateStart, LocalDate dateEnd, Long idClient) {
+        Specification<Loan> spec = Specification
+                .where(new LoanSpecification(
+                        new SearchCriteria("dateStart", "~", dateStart))
+                )
+                .or(new LoanSpecification(
+                        new SearchCriteria("dateEnd", "~", dateEnd))
+                )
+                .and(new LoanSpecification(
+                        new SearchCriteria("client.id", ":", idClient)
+                ));
+        return loanRepository.findAll(spec);
+    }
+
+    private List<Loan> getAllLoansBetweenDates(LocalDate dateStart, LocalDate dateEnd) {
+        return getAllLoansBetweenDatesFromClient(dateStart, dateEnd, null);
+    }
+
+    @Override
+    public Loan getLoanById(Long id) {
+        return loanRepository.findById(id).orElse(null);
     }
 }
