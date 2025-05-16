@@ -51,7 +51,7 @@ public class ClientServiceImpl implements ClientService {
 
     }
 
-    public static String normalizeName(String name) {
+    private String normalizeName(String name) {
         return Arrays.stream(name.toLowerCase().trim().split("\\s+"))
                 .map(w -> Character.toUpperCase(w.charAt(0)) + w.substring(1))
                 .collect(Collectors.joining(" "));
