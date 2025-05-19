@@ -55,8 +55,8 @@ public class LoanServiceImpl implements LoanService {
         if (getAllLoansBetweenDates(dateStart, dateEnd).stream().anyMatch(l -> l.getGame().getId().equals(idGame)))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El juego ya está en préstamo.");
 
-        if (!getAllLoansBetweenDatesFromClient(dateStart, dateEnd, idClient).isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ya tiene un juego en préstamo durante esas fechas.");
+        if (getAllLoansBetweenDatesFromClient(dateStart, dateEnd, idClient).size() >= 2)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ya tiene 2 juegos en préstamo durante esas fechas.");
 
         // Mapeo de la entidad
         BeanUtils.copyProperties(loanDTO, loan, "id", "category", "game");
